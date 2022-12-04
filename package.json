@@ -20,9 +20,10 @@
   },
   "scripts": {
     "start": "ts-node-dev src/server.ts",
-    "build": "npm-run-all clean tsc copy-assets",
+    "build": "npm-run-all save-assets clean tsc copy-assets",
     "tsc": "tsc",
     "copy-assets": "ts-node tools/copyAssets",
+    "save-assets": "ts-node tools/saveAssets",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "clean": "rimraf dist/*"
   },
