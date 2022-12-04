@@ -8,7 +8,7 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
 
   if (!token) {
     if (!req.originalUrl.includes("api")) return res.redirect("/login");
-    return res.status(401).json({ msg: "No token, authorization denied" });
+    return res.status(401).json({ error: "No token, authorization denied" });
   }
   // Verify token
   try {
@@ -16,26 +16,32 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
       token,
       process.env.JWT_SECRET,
       (err: VerifyErrors, decoded: { userId: string }) => {
-        if (err)
+        if (err && req.originalUrl.includes("api"))
+          return res
+            .status(403)
+            .clearCookie("access_token")
+            .json({ error: err });
+        else if (err) {
           return res.status(403).clearCookie("access_token").redirect("/login");
-
-        User.findById(
-          decoded.userId,
-          (error: CallbackError, foundUser: IUser) => {
-            if (error) throw error;
-            if (!foundUser)
-              return res
-                .status(403)
-                .clearCookie("access_token")
-                .redirect("/login");
-            req.user = foundUser;
-            next();
-          }
-        );
+        } else {
+          User.findById(
+            decoded.userId,
+            (error: CallbackError, foundUser: IUser) => {
+              if (error) throw error;
+              if (!foundUser)
+                return res
+                  .status(403)
+                  .clearCookie("access_token")
+                  .redirect("/login");
+              req.user = foundUser;
+              next();
+            }
+          );
+        }
       }
     );
   } catch (err) {
-    res.status(401).json({ msg: "Token is not valid" });
+    res.status(401).json({ error: "Token is not valid" });
   }
 };
 

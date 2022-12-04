@@ -27,24 +27,6 @@ router.post(
     check("password", "Password is required").exists(),
   ],
   async (req: Request, res: Response) => {
-    const token = req.cookies.access_token;
-
-    if (token) {
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET,
-        (err: VerifyErrors, decoded: { userId: string }) => {
-          if (!err && decoded.userId)
-            return res
-              .cookie("access_token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-              })
-              .json({ message: "Logged in successfully" });
-        }
-      );
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -53,7 +35,6 @@ router.post(
     const { email, password } = req.body;
     try {
       const user: IUser = await User.findOne({ email });
-
       if (!user) {
         return res.status(400).json({
           errors: [
@@ -76,6 +57,29 @@ router.post(
         });
       }
 
+      const responseUser = {
+        fullName: user.fullName,
+        mobile: user.mobile,
+        email: user.email,
+        role: user.role,
+      };
+      const token = req.cookies.access_token;
+      if (token) {
+        jwt.verify(
+          token,
+          process.env.JWT_SECRET,
+          (err: VerifyErrors, decoded: { userId: string }) => {
+            if (!err && decoded.userId)
+              return res
+                .cookie("access_token", token, {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === "production",
+                })
+                .json({ user: responseUser });
+          }
+        );
+      }
+
       jwt.sign(
         { userId: user._id },
         process.env.JWT_SECRET,
@@ -87,11 +91,11 @@ router.post(
               httpOnly: true,
               secure: process.env.NODE_ENV === "production",
             })
-            .json({ message: "Logged in successfully" });
+            .json({ user: responseUser });
         }
       );
-    } catch (err) {
-      res.status(500).json({ error: "Server Error" });
+    } catch (error) {
+      res.status(500).json({ error });
     }
   }
 );
@@ -121,13 +125,13 @@ router.post(
 
     const { email, password, fullName, mobile } = req.body;
     try {
-      const user: IUser = await User.findOne({ email });
+      const user: IUser = await User.findOne({ $or: [{ email }, { mobile }] });
 
       if (user) {
         return res.status(400).json({
           errors: [
             {
-              msg: "User with this email already exists",
+              msg: "User with this email or mobile already exists",
             },
           ],
         });
@@ -147,6 +151,7 @@ router.post(
 
       const addedUser = await User.create(newUser);
 
+      const { password: userPassword, _id, ...responseUser } = newUser;
       jwt.sign(
         { userId: addedUser._id },
         process.env.JWT_SECRET,
@@ -159,7 +164,7 @@ router.post(
               secure: process.env.NODE_ENV === "production",
             })
             .status(200)
-            .json({ message: "Logged in successfully" });
+            .json({ user: responseUser });
         }
       );
     } catch (err) {

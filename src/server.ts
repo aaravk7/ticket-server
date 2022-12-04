@@ -14,7 +14,9 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(
   cors({
-    origin: "http://0.0.0.0:3000",
+    origin: "https://deft-granita-562e75.netlify.app/",
+    methods: ["GET", "POST"],
+    credentials: true,
   })
 );
 

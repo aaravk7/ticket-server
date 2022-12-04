@@ -8,7 +8,7 @@ const router = Router();
 
 router.use("/", auth);
 router.use("/events", events);
-router.use("/events/:eventId/tickets", ticket);
+router.use("/events/:eventSlug/tickets", ticket);
 router.use("/", order);
 
 export default router;

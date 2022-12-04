@@ -1,36 +1,56 @@
 import { Router, Request, Response } from "express";
-import { FilterQuery, Types } from "mongoose";
+import { Types } from "mongoose";
 import Event from "../../model/Event";
 import { check, validationResult } from "express-validator";
 
-import { isAdmin, isLoggedIn } from "../../middleware/middleware";
-import { UserRole } from "../../model/User";
+import { isLoggedIn } from "../../middleware/middleware";
 import Ticket from "../../model/Ticket";
 import Order, { IOrder, OrderStatus } from "../../model/Order";
 
 const router = Router();
 
-router.get(
-  "/orders/:orderId",
-  isLoggedIn,
-  check("orderId", "Invalid Order Id")
-    .isString()
-    .isLength({ min: 24, max: 24 }),
-  async (req: Request, res: Response) => {
-    const { orderId } = req.params;
-
-    try {
-      const order = await Order.findById(orderId);
-      if (order.owner !== req.user._id) {
-        return res.status(403).json({ error: "Unauthorized" });
-      }
-
-      return res.json({ order });
-    } catch (error) {
-      res.status(500).json(error);
-    }
+router.get("/orders", isLoggedIn, async (req: Request, res: Response) => {
+  try {
+    const orders = await Order.aggregate([
+      { $match: { owner: req.user._id } },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "ticket",
+          foreignField: "_id",
+          as: "ticketData",
+        },
+      },
+      {
+        $lookup: {
+          from: "events",
+          localField: "event",
+          foreignField: "_id",
+          as: "eventData",
+        },
+      },
+      { $unwind: "$ticketData" },
+      { $unwind: "$eventData" },
+      {
+        $project: {
+          _id: 1,
+          totalPrice: 1,
+          status: 1,
+          ticketData: {
+            date: 1,
+            description: 1,
+          },
+          eventData: {
+            name: 1,
+          },
+        },
+      },
+    ]);
+    return res.json({ orders });
+  } catch (error) {
+    res.status(500).json(error);
   }
-);
+});
 
 const addOrderValidation = [
   check("ticketId", "Invalid ticket Id")

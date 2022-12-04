@@ -14,7 +14,7 @@
       <% orders.forEach((order , index) => { %>
       <tr>
         <td><%= index + 1 %></td>
-        <td><%= order.owner %></td>
+        <td><%= order.user.fullName %></td>
         <td>Rs.<%= order.totalPrice %></td>
         <td><%= order.status %></td>
       </tr>

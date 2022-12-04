@@ -8,36 +8,34 @@ import { isLoggedIn } from "../../middleware/middleware";
 const router = Router();
 
 // All events route
-router.get("/", isLoggedIn, (req: Request, res: Response) => {
+router.get("/", isLoggedIn, async (req: Request, res: Response) => {
   const filter: FilterQuery<IEvent> = {
     published: true,
-    endDate: { $lte: new Date() },
+    endDate: { $gte: new Date(new Date().setHours(24, 0, 0, 0)) },
   };
 
-  Event.find(filter, (err: Error, events: IEvent[]) => {
-    if (err) {
-      res.status(500).json(err);
-    } else {
-      res.status(200).json({ events });
-    }
-  });
+  try {
+    const events = await Event.find<IEvent>(filter).select("-description");
+    res.status(200).json({ events });
+  } catch (error) {
+    res.status(500).json(error);
+  }
 });
 
 // Event details Route
 router.get(
-  "/:_id",
+  "/:slug",
   isLoggedIn,
-  param(["_id"]).isLength({ max: 24, min: 24 }).withMessage("Invalid _id"),
-  (req: Request, res: Response) => {
-    const { _id } = req.params;
+  param(["slug"]).isSlug(),
+  async (req: Request, res: Response) => {
+    const { slug } = req.params;
 
-    Event.findOne({ _id }, (err: Error, event: IEvent) => {
-      if (err) {
-        res.status(500).json(err);
-      } else {
-        res.status(200).json({ event });
-      }
-    });
+    try {
+      const event = await Event.findOne<IEvent>({ slug });
+      res.status(200).json({ event });
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 );
 

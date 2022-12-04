@@ -4,20 +4,24 @@ import { check } from "express-validator";
 
 import { isLoggedIn } from "../../middleware/middleware";
 import Ticket, { ITicket } from "../../model/Ticket";
+import Event from "../../model/Event";
 
-const router = Router();
+const router = Router({ mergeParams: true });
 
 router.get(
   "/",
   isLoggedIn,
-  check("eventId", "Invalid Event Id")
-    .isString()
-    .isLength({ min: 24, max: 24 }),
-  (req: Request, res: Response) => {
-    const { eventId } = req.params;
+  check("eventSlug", "Invalid Event Slug").isSlug(),
+  async (req: Request, res: Response) => {
+    const { eventSlug } = req.params;
+
+    const event = await Event.findOne({ slug: eventSlug });
+    if (!event) {
+      return res.status(400).json({ error: "Event does not exist" });
+    }
 
     let filter: FilterQuery<ITicket> = {
-      event: eventId,
+      event: event._id,
       date: { $gt: new Date(new Date().setHours(24, 0, 0, 0)) },
     };
 
