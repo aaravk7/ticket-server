@@ -110,7 +110,7 @@ router.post(
 
     const posterName = path.join(
       cwd(),
-      "src/public/posters",
+      "dist/public/posters",
       Date.now().toString() + "." + poster.name.split(".").at(-1)
     );
     try {
