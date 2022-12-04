@@ -146,7 +146,7 @@ router.post(
         email,
         password: hashed,
         mobile,
-        role: UserRole.ADMIN,
+        role: UserRole.USER,
       };
 
       const addedUser = await User.create(newUser);
