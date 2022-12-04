@@ -22,7 +22,7 @@ router.get(
     }
     const { eventId } = req.params;
 
-    let filter: FilterQuery<ITicket> = {
+    const filter: FilterQuery<ITicket> = {
       event: eventId,
     };
 
@@ -96,7 +96,7 @@ router.post(
         date,
         description,
         price,
-        totalQuantity: totalQuantity,
+        totalQuantity,
         availableQuantity: totalQuantity,
       };
 

@@ -16,7 +16,7 @@ router.get(
     .isLength({ min: 24, max: 24 }),
   (req: Request, res: Response) => {
     const { ticketId } = req.params;
-    let filter: FilterQuery<IOrder> = {
+    const filter: FilterQuery<IOrder> = {
       ticket: ticketId,
     };
 

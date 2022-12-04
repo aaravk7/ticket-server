@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 
 import admin from "./routes/admin";
+import api from "./routes/api";
 
 dotenv.config();
 const app = express();
@@ -17,10 +18,8 @@ app.use(
   })
 );
 
-//Connect DB
 connect(process.env.MONGO_URI).catch((error) => console.error(error));
 
-//Setup express
 app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Routes
 app.use("/", admin);
+app.use("/api", api);
 
 const port = process.env.PORT;
 app.listen(port, () => {
