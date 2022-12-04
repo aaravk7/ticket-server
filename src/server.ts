@@ -2,7 +2,7 @@ import express from "express";
 import { connect } from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
-import cors from "cors";
+// import cors from "cors";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
 
@@ -12,13 +12,13 @@ import api from "./routes/api";
 dotenv.config();
 const app = express();
 app.set("view engine", "ejs");
-app.use(
-  cors({
-    origin: new RegExp("^http(s)?://([a-z]*.)?netlify.app$"),
-    methods: ["GET", "POST"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: new RegExp("^http(s)?://([a-z]*.)?netlify.app$"),
+//     methods: ["GET", "POST"],
+//     credentials: true,
+//   })
+// );
 
 connect(process.env.MONGO_URI).catch((error) => console.error(error));
 
