@@ -14,7 +14,7 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(
   cors({
-    origin: "^http(s)?://([a-z]*.)?netlify.app$",
+    origin: new RegExp("^http(s)?://([a-z]*.)?netlify.app$"),
     methods: ["GET", "POST"],
     credentials: true,
   })

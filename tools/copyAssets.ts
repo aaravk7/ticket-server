@@ -2,4 +2,5 @@ import { cp, mkdir, mv } from "shelljs";
 
 cp("-R", ["src/views"], "dist/");
 mkdir("dist/public");
-mv("-f", "./public", "dist");
+mkdir("dist/public/posters");
+// mv("-f", "./public", "dist");
