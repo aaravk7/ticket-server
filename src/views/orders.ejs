@@ -1,0 +1,25 @@
+<%- include('./partials/head'); %>
+<main class="container py-5 d-flex flex-column gap-3">
+  <h1 class="display-5">Ticket Orders</h1>
+  <table class="table table-bordered table-stripped">
+    <thead>
+      <tr>
+        <th scope="col">Sr No.</th>
+        <th scope="col">Owner</th>
+        <th scope="col">Total Price</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% orders.forEach((order , index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><%= order.owner %></td>
+        <td>Rs.<%= order.totalPrice %></td>
+        <td><%= order.status %></td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</main>
+<footer><%- include('./partials/foot'); %></footer>

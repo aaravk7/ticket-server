@@ -1,0 +1,39 @@
+<%- include('./partials/head'); %>
+<main>
+  <div class="container p-5">
+    <h2 class="display-5 pt-2">Add Event</h2>
+    <form action="/events/add" method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label"> Name </label>
+        <input type="text" class="form-control" name="name" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label"> Slug </label>
+        <input type="text" class="form-control" name="slug" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label"> Description </label>
+        <textarea
+          type="text"
+          class="form-control"
+          name="description"
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label"> Poster </label>
+        <input type="file" class="form-control" name="poster" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Start Date </label>
+        <input type="date" class="form-control" name="startDate" required />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">End Date </label>
+        <input type="date" class="form-control" name="endDate" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Add Event</button>
+    </form>
+  </div>
+</main>
+<%- include('./partials/foot'); %>
