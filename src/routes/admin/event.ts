@@ -108,11 +108,13 @@ router.post(
         .status(400)
         .json({ error: "Poster can only be a jpeg or png image" });
 
-    console.log({ poster });
+    console.log(poster.name);
+    const fileName = poster.name.replace(" ", "");
+    console.log(fileName);
     const posterName = path.join(
       cwd(),
       "dist/public/posters",
-      Date.now().toString() + "." + poster.name.replace(" ", "").at(-1)
+      Date.now().toString() + "." + fileName
     );
     try {
       await poster.mv(posterName);
